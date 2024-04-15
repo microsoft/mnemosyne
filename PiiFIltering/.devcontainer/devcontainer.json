@@ -3,7 +3,19 @@
 {
 	"name": "Debian",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:bullseye"
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	"postCreateCommand": [
+        "echo 'Running post create commands...'",
+        // "apt-get update",
+        // "apt-get install -y curl"		
+		"sudo apt update",		//Update your system's package list
+		"curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash",	//Install NVM
+		"source ~/.bashrc", 	//Load NVM
+		"nvm install 18.20.1",	//Install Node.js 18.20.1
+		"npm install -g azure-functions-core-tools@4 --unsafe-perm true",	//Install Azure Functions Core Tools
+		"npm install dotenv",	//Install dotenv
+		"npm install @azure/ai-language-text"	//Install Azure AI Text Analytics
+    ]
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
