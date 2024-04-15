@@ -42,8 +42,9 @@ export async function PiiFiltering(request: HttpRequest, context: InvocationCont
         KnownPiiEntityCategory.PhoneNumber,
         KnownPiiEntityCategory.USSocialSecurityNumber,
         KnownPiiEntityCategory.Person,
+        KnownPiiEntityCategory.Email,
         KnownPiiEntityCategory.Age
-
+      ]
     });
 
     
