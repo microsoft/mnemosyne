@@ -112,16 +112,14 @@ param SqlAdministratorLogin string = ''
 @secure()
 param SqlAdministratorLoginPassword string = ''
 
-// @description('Id that will be suffixed to all created resources to identify resources of a certain deployment. Leave as is to use timestamp as deployment id.')
-// param DeploymentId string = utcNow()
+@description('Id that will be suffixed to all created resources to identify resources of a certain deployment. Leave as is to use timestamp as deployment id.')
+param DeploymentId string = utcNow()
 
 param ResourceGroupLocation string = resourceGroup().location
 
 @description('BYOS allows for the speech service to utilize an internal storage account')
 param IsByosEnabledSubscription bool = false
 
-@description('DB connection used for transcription analytics')
-param AzureSqlDBConnection string
 
 var Version = 'v2.0.12'
 var AudioInputContainer = 'audio-input'
@@ -140,7 +138,7 @@ var FilesPerTranscriptionJob = 100
 var RetryLimit = 4
 var InitialPollingDelayInMinutes = 2
 var MaxPollingDelayInMinutes = 180
-var InstanceId = uniqueString(resourceGroup().id)
+var InstanceId = toLower(DeploymentId)
 var StorageAccountName = StorageAccount
 var UseSqlDatabase = ((SqlAdministratorLogin != '') && (SqlAdministratorLoginPassword != ''))
 var SqlServerName = 'sqlserver${toLower(InstanceId)}'
@@ -331,8 +329,8 @@ resource SqlServerName_AllowAllMicrosoftAzureIps 'Microsoft.Sql/servers/firewall
     properties: {
       endIpAddress: '0.0.0.0'
       startIpAddress: '0.0.0.0'
-    }
   }
+}
 
 resource StorageAccount_resource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: StorageAccountName
@@ -620,8 +618,6 @@ resource StartTranscriptionFunctionName_AppSettings 'Microsoft.Web/sites/config@
     AzureServiceBus: ServiceBusName_RootManageSharedAccessKey.listKeys().primaryConnectionString
     AzureSpeechServicesKey: '@Microsoft.KeyVault(VaultName=${KeyVaultName};SecretName=${AzureSpeechServicesKeySecretName})'
     AzureSpeechServicesRegion: AzureSpeechServicesRegion
-   // AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${StorageAccountName};AccountKey=${listKeys(StorageAccount_resource.id,providers('Microsoft.Storage','storageAccounts').apiVersions[0]).keys[0].value};EndpointSuffix=${EndpointSuffix}'
-    //AzureWebJobsDashboard: 'DefaultEndpointsProtocol=https;AccountName=${StorageAccountName};AccountKey=${listKeys(StorageAccount_resource.id,providers('Microsoft.Storage','storageAccounts').apiVersions[0]).keys[0].value};EndpointSuffix=${EndpointSuffix}'
     AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${StorageAccountName};AccountKey=${listKeys(StorageAccount_resource.id, '2021-04-01').keys[0].value};EndpointSuffix=${EndpointSuffix}'
     CustomModelId: CustomModelId
     ErrorFilesOutputContainer: ErrorFilesOutputContainer
@@ -674,8 +670,6 @@ resource FetchTranscriptionFunctionName_AppSettings 'Microsoft.Web/sites/config@
     AudioInputContainer: AudioInputContainer
     AzureServiceBus: ServiceBusName_RootManageSharedAccessKey.listKeys().primaryConnectionString
     AzureSpeechServicesKey: '@Microsoft.KeyVault(VaultName=${KeyVaultName};SecretName=${AzureSpeechServicesKeySecretName})'
-    //AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${StorageAccountName};AccountKey=${listKeys(StorageAccount_resource.id,providers('Microsoft.Storage','storageAccounts').apiVersions[0]).keys[0].value};EndpointSuffix=${EndpointSuffix}'
-    //AzureWebJobsDashboard: 'DefaultEndpointsProtocol=https;AccountName=${StorageAccountName};AccountKey=${listKeys(StorageAccount_resource.id,providers('Microsoft.Storage','storageAccounts').apiVersions[0]).keys[0].value};EndpointSuffix=${EndpointSuffix}'
     AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${StorageAccountName};AccountKey=${listKeys(StorageAccount_resource.id,'2021-04-01').keys[0].value};EndpointSuffix=${EndpointSuffix}'
     CreateHtmlResultFile:  '${CreateHtmlResultFile}'
     DatabaseConnectionString: '@Microsoft.KeyVault(VaultName=${KeyVaultName};SecretName=${DatabaseConnectionStringSecretName})'
@@ -708,8 +702,11 @@ resource FetchTranscriptionFunctionName_AppSettings 'Microsoft.Web/sites/config@
     KeyVault
     KeyVaultName_AzureSpeechServicesKeySecret
     KeyVaultName_TextAnalyticsKeySecret
+    KeyVaultName_DatabaseConnectionStringSecret
   ]
 }
+
+
 
 output StartTranscriptionFunctionId string = StartTranscriptionFunctionId
 output FetchTranscriptionFunctionId string = FetchTranscriptionFunctionId
