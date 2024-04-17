@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "SqlAdministratorLogin": {
+      "value": ""
+    },
+    "SqlAdministratorLoginPassword": {
+      "value": "p@"
+    },
+    "StorageAccount": {
+      "value": ""
+    },
+    "Locale": {
+      "value": "en-US | English (United States)"
+    },
+    "AzureSpeechServicesKey": {
+      "value": ""
+    },
+    "CustomEndpoint": {
+      "value": ""
+    },
+    "ProfanityFilterMode": {
+      "value": "None"
+    },
+    "PunctuationMode": {
+      "value": "DictatedAndAutomatic"
+    },
+    "AddDiarization": {
+      "value": false
+    },
+    "AddWordLevelTimestamps": {
+      "value": false
+    },
+    "TextAnalyticsKey": {
+      "value": ""
+    },
+    "TextAnalyticsEndpoint": {
+      "value": "https:/FOO.cognitiveservices.azure.com"
+    },
+    "IsByosEnabledSubscription":{
+      "value": false
+    }
+  }
+}
